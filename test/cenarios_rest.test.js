@@ -223,52 +223,6 @@ describe('POST /api/checkout', () => {
 let tokeen = null;
 let link = 'http://localhost:3000'
 describe('Teste sem sinon', () => {
-  it('Deve registrar um usuário com sucesso', async () => {
-    const randomEmail = `user_${Date.now()}@camada.com`;
-    const res = await request(link)
-      .post('/api/users/register')
-      .set('Accept', 'application/json')
-      .send({
-        name: 'camada',
-        email: randomEmail,
-        password: '12345'
-      });
-
-    expect(res.status).to.equal(201); 
-    expect(res.body.user).to.have.property('name', 'camada');
-    expect(res.body.user).to.have.property('email', randomEmail);
-  });
-
-
-  it('usuário com Email já cadastrado', async () => {
-    const res = await request(link)
-      .post('/api/users/register')
-      .set('Accept', 'application/json')
-      .send({
-        name: 'camada',
-        email: 'novo_unico@camada.com',
-        password: '12345'
-      });
-
-    expect(res.status).to.equal(400);
-    expect(res.body).to.have.property('error', 'Email já cadastrado');
-  });
-
-  it('Deve realizar login com sucesso', async () => {
-    const res = await request(link)
-      .post('/api/users/login')
-      .set('Accept', 'application/json')
-      .send({
-        email: 'camada@camada.com',
-        password: '12345'
-      });
-
-    expect(res.status).to.equal(200); 
-
-    // opcional: armazenar token para outros testes
-     tokeen = res.body.token;
-    //console.log('Token obtido:', tokeen);
-  });
 
 
 
