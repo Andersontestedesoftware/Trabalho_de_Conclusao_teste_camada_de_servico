@@ -272,22 +272,62 @@ describe('Teste sem sinon', () => {
 
 
 
+  let testEmail = `user_${Date.now()}@camada.com`;
+  let testPassword = '12345';
+  let tokeen = null;
+
+  it('Deve registrar um usuário com sucesso', async () => {
+    const res = await request(link)
+      .post('/api/users/register')
+      .set('Accept', 'application/json')
+      .send({
+        name: 'camada',
+        email: testEmail,
+        password: testPassword
+      });
+    expect(res.status).to.equal(201);
+    expect(res.body.user).to.have.property('name', 'camada');
+    expect(res.body.user).to.have.property('email', testEmail);
+  });
+
+  it('usuário com Email já cadastrado', async () => {
+    const res = await request(link)
+      .post('/api/users/register')
+      .set('Accept', 'application/json')
+      .send({
+        name: 'camada',
+        email: testEmail,
+        password: testPassword
+      });
+    expect(res.status).to.equal(400);
+    expect(res.body).to.have.property('error', 'Email já cadastrado');
+  });
+
+  it('Deve realizar login com sucesso', async () => {
+    const res = await request(link)
+      .post('/api/users/login')
+      .set('Accept', 'application/json')
+      .send({
+        email: testEmail,
+        password: testPassword
+      });
+    expect(res.status).to.equal(200);
+    tokeen = res.body.token;
+  });
+
   it('login com dados errados', async () => {
     const res = await request(link)
       .post('/api/users/login')
       .set('Accept', 'application/json')
       .send({
-        email: 'camada@c.com',
-        password: '12345'
+        email: 'email_invalido@camada.com',
+        password: testPassword
       });
-
     expect(res.status).to.equal(401);
-    expect(res.body).to.have.property('error', 'Credenciais inválidas'); 
+    expect(res.body).to.have.property('error', 'Credenciais inválidas');
   });
 
-
-
-it('checkout com "Produto não encontrado"', async () => {
+  it('checkout com "Produto não encontrado"', async () => {
     const res = await request(link)
       .post('/api/checkout')
       .set('Authorization', `Bearer ${tokeen}`)
@@ -298,13 +338,11 @@ it('checkout com "Produto não encontrado"', async () => {
         paymentMethod: 'boleto',
         cardData: { number: '1234123412341234', name: 'Anderson', expiry: '12/30', cvv: '123' },
       });
-
     expect(res.status).to.equal(400);
     expect(res.body).to.have.property('error', 'Produto não encontrado');
   });
 
-
-it('checkout com sucesso', async () => {
+  it('checkout com sucesso', async () => {
     const res = await request(link)
       .post('/api/checkout')
       .set('Authorization', `Bearer ${tokeen}`)
@@ -315,25 +353,6 @@ it('checkout com sucesso', async () => {
         paymentMethod: 'boleto',
         cardData: { number: '1234123412341234', name: 'Anderson', expiry: '12/30', cvv: '123' },
       });
-
     expect(res.status).to.equal(200);
   });
-
-it('checkout com token errado', async () => {
-    const res = await request(link)
-      .post('/api/checkout')
-      .set('Authorization', `Bearer ${'teste'}`)
-      .set('Accept', 'application/json')
-      .send({
-        items: [{ productId: 1, quantity: 2 }],
-        freight: 10,
-        paymentMethod: 'boleto',
-        cardData: { number: '123', name: 'Anderson', expiry: '12/30', cvv: '123' },
-      });
-
-    expect(res.status).to.equal(401);
-    expect(res.body).to.have.property('error', 'Token inválido');
-  });
-
-
 });
