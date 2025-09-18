@@ -3,6 +3,7 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 const app = require('../rest/app');
 const userService = require('../src/services/userService');
+const userController = require('../rest/controllers/userController');
 
 let token;
 
@@ -48,6 +49,40 @@ describe('/api/users/register', () => {
 
     expect(res.status).to.equal(400);
     expect(res.body).to.have.property('error', 'Email já cadastrado');
+  });
+    
+  it('método register do controller usando sinon', () => {
+    const req = { body: { name: 'NovoController', email: 'controller_unique@email.com', password: '1234' } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub()
+    };
+    const registerStub = sinon.stub(userController, 'register').callsFake((req, res) => {
+      res.status(201).json({ user: { name: req.body.name, email: req.body.email } });
+    });
+
+    userController.register(req, res);
+
+    expect(res.status.calledWith(201)).to.be.true;
+    expect(res.json.calledWith({ user: { name: 'NovoController', email: 'controller_unique@email.com' } })).to.be.true;
+    registerStub.restore();
+  });
+
+  it('método login do controller usando sinon', () => {
+    const req = { body: { email: 'logincontroller@email.com', password: 'senha123' } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub()
+    };
+    const loginStub = sinon.stub(userController, 'login').callsFake((req, res) => {
+      res.status(200).json({ token: 'token-fake', user: { email: req.body.email } });
+    });
+
+    userController.login(req, res);
+
+    expect(res.status.calledWith(200)).to.be.true;
+    expect(res.json.calledWith({ token: 'token-fake', user: { email: 'logincontroller@email.com' } })).to.be.true;
+    loginStub.restore();
   });
 });
 
@@ -189,18 +224,19 @@ let tokeen = null;
 let link = 'http://localhost:3000'
 describe('Teste sem sinon', () => {
   it('Deve registrar um usuário com sucesso', async () => {
+    const randomEmail = `user_${Date.now()}@camada.com`;
     const res = await request(link)
       .post('/api/users/register')
       .set('Accept', 'application/json')
       .send({
         name: 'camada',
-        email: 'camada@camada.com',
+        email: randomEmail,
         password: '12345'
       });
 
     expect(res.status).to.equal(201); 
     expect(res.body.user).to.have.property('name', 'camada');
-    expect(res.body.user).to.have.property('email', 'camada@camada.com');
+    expect(res.body.user).to.have.property('email', randomEmail);
   });
 
 
@@ -210,7 +246,7 @@ describe('Teste sem sinon', () => {
       .set('Accept', 'application/json')
       .send({
         name: 'camada',
-        email: 'camada@camada.com',
+        email: 'novo_unico@camada.com',
         password: '12345'
       });
 
