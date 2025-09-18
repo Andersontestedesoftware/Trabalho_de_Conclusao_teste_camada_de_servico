@@ -276,8 +276,9 @@ describe('Teste sem sinon', () => {
   let testPassword = '12345';
   let tokeen = null;
 
-  it('Deve registrar um usuário com sucesso', async () => {
-    const res = await request(link)
+  it('Deve registrar um usuário com sucesso e testar email já cadastrado', async () => {
+    // Primeiro cadastro
+    const res1 = await request(link)
       .post('/api/users/register')
       .set('Accept', 'application/json')
       .send({
@@ -285,13 +286,12 @@ describe('Teste sem sinon', () => {
         email: testEmail,
         password: testPassword
       });
-    expect(res.status).to.equal(201);
-    expect(res.body.user).to.have.property('name', 'camada');
-    expect(res.body.user).to.have.property('email', testEmail);
-  });
+    expect(res1.status).to.equal(201);
+    expect(res1.body.user).to.have.property('name', 'camada');
+    expect(res1.body.user).to.have.property('email', testEmail);
 
-  it('usuário com Email já cadastrado', async () => {
-    const res = await request(link)
+    // Segundo cadastro com mesmo email
+    const res2 = await request(link)
       .post('/api/users/register')
       .set('Accept', 'application/json')
       .send({
@@ -299,8 +299,8 @@ describe('Teste sem sinon', () => {
         email: testEmail,
         password: testPassword
       });
-    expect(res.status).to.equal(400);
-    expect(res.body).to.have.property('error', 'Email já cadastrado');
+    expect(res2.status).to.equal(400);
+    expect(res2.body).to.have.property('error', 'Email já cadastrado');
   });
 
   it('Deve realizar login com sucesso', async () => {
