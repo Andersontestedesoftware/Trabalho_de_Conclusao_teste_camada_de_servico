@@ -17,7 +17,11 @@ function authenticate(email, password) {
   const user = findUserByEmail(email);
   if (user && user.password === password) {
     const token = jwt.sign({ id: user.id, email: user.email }, SECRET, { expiresIn: '1h' });
-    return { token };
+    // Retorna o token e o usuário (sem senha)
+    return {
+      token,
+      user: { name: user.name, email: user.email }
+    };
   }
   return null;
 }

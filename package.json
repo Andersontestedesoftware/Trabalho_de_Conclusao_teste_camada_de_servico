@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test:rest": "npx mocha \"test/cenarios_rest.test.js\"",
+    "test:graphql": "npx mocha \"test/cenarios_graphql.test.js\"",
+    "test": "npm run test:rest && npm run test:graphql"
   },
   "repository": {
     "type": "git",
@@ -24,5 +26,11 @@
     "graphql": "^16.11.0",
     "jsonwebtoken": "^9.0.2",
     "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "chai": "^4.5.0",
+    "mocha": "^11.7.2",
+    "sinon": "^21.0.0",
+    "supertest": "^7.1.4"
   }
 }
