@@ -244,7 +244,7 @@ describe('Teste sem sinon', () => {
     expect(res1.body.user).to.have.property('name', 'camada');
     expect(res1.body.user).to.have.property('email', testEmail);
 
-    // Segundo cadastro com mesmo email
+    // Segundo cadastro com mesmo email para da 400
     const res2 = await request(link)
       .post('/api/users/register')
       .set('Accept', 'application/json')
