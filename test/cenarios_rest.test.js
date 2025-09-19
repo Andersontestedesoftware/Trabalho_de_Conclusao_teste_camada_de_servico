@@ -6,6 +6,8 @@ const userService = require('../src/services/userService');
 const userController = require('../rest/controllers/userController');
 
 let token;
+let tokeen = null;
+let link = 'http://localhost:3000'
 
 describe('/api/users/register', () => {
   afterEach(() => {
@@ -217,20 +219,13 @@ describe('POST /api/checkout', () => {
 
 
 
-
-
-
-let tokeen = null;
-let link = 'http://localhost:3000'
 describe('Teste sem sinon', () => {
-
-
 
   let testEmail = `user_${Date.now()}@camada.com`;
   let testPassword = '12345';
   let tokeen = null;
 
-  it('Deve registrar um usuário com sucesso e testar email já cadastrado', async () => {
+  it('Deve registrar um usuário com sucesso', async () => {
     // Primeiro cadastro
     const res1 = await request(link)
       .post('/api/users/register')
@@ -244,7 +239,10 @@ describe('Teste sem sinon', () => {
     expect(res1.body.user).to.have.property('name', 'camada');
     expect(res1.body.user).to.have.property('email', testEmail);
 
-    // Segundo cadastro com mesmo email para da 400
+  });
+
+  it('Testar email já cadastrado', async () => {
+        // Segundo cadastro com mesmo email para da 400
     const res2 = await request(link)
       .post('/api/users/register')
       .set('Accept', 'application/json')
