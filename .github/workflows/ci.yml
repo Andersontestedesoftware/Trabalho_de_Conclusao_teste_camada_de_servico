@@ -22,12 +22,12 @@ jobs:
       - name: Start REST server
         run: |
           nohup node server_rest.js &
-          sleep 3
+          sleep 5
 
       - name: Start GraphQL server
         run: |
           nohup node server_graphql.js &
-          sleep 3
+          sleep 5
 
       - name: Run all tests
         run: npm test
